@@ -1,6 +1,26 @@
 <?php
+    /**
+    * The Context class provides a means to execute role methods
+    * with explicit typecasting.  By specifying type-hinted roles
+    * in the definition of the child class' Execute function, the 
+    * parent Context::Execute function can explicitly tell any 
+    * DCIObjects which roles they should be playing in a given 
+    * context.
+    *
+    * @author Joe Chrzanowski
+    * @version 1.0
+    * @package CoreDCI
+    */
     abstract class Context {
-        function Execute() {
+        /**
+        * This method should be called from an inheriting object's
+        * Execute() function (thus the protected scope).  This method 
+        * causes the DCIObjects passed to the child's Execute() method 
+        * to be auto-type-casted to the role specified in the declaration.
+        *
+        * @return mixed
+        */
+        protected function Execute() {
             // reflect the function to determine the casted types
     	    $var = new ReflectionMethod($this,'Execute');
     	    $params = $var->getParameters();
@@ -26,10 +46,6 @@
                     $theobj->fallback = $role;                 // update to the role we're casting to
                 }
     	    }
-        }
-        
-        function __toString() {
-            return "" . $this->Execute();
         }
     }
 ?>

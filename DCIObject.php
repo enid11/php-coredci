@@ -3,12 +3,16 @@
 	* This class provides base functionality for the rest of the framework.
 	* The DCIObject class is meant to be extended and as a result provides
 	* the ability to implement role methods, properties, and performs all 
-	* necessary redirection to fully implement DCI
+	* necessary redirection to fully implement DCI.  
+	*
+	* The class is abstract because by itself, DCIObject does not implement
+	* any roles, thereby making it just a regular old PHP object.
 	*
 	* @author Joe Chrzanowski <joechrz@gmail.com>
 	* @version 3.0
+	* @package CoreDCI
 	*/
-	class DCIObject {
+	abstract class DCIObject {
 		/**
         * array to hold the parent role for all injected methods
         */
@@ -46,6 +50,8 @@
 		* While it is technically possible to add a role after initialization,
 		* the type hinting used in role and context methods can only happen at
 		* compile-time.
+		*
+		* @param string $role The name of the role that this class should implement
 		*/
 		private function addRole($role) {
 		    $roleclass = $role . "Actions";
@@ -69,22 +75,34 @@
 		* rRoleNameActions::method($this, ... )
 		*
 		* Calling an injected method eventually gets routed to this function.
+		*
+		* The function is private because $this is passed to the role method.  It would
+		* cause errors if $this was passed to a role that it did not implement.
+		*
+		* @param string $role The role that implements the given method
+		* @param string $method The name of the role method to call
+		* @param array $args The arguments to pass to the role method
+		* @return mixed
 		*/
-		function call_explicit($role, $method, $args) {
+		private function call_explicit($role, $method, $args) {
 		    array_unshift($args, $this);
 		    $roleclass = $role . "Actions";
 		    if (class_exists($roleclass) && method_exists($roleclass,$method))
                 return call_user_func_array(array($roleclass,$method),$args);
             else 
-                throw new MethodNotFoundException("$role::$method",$this->roles[$role]);
+                throw new RoleMethodNotFoundException("$role::$method",$this->roles[$role]);
 		}
 		
 		/**
 		* Call a role method:
-		*   First, check for ambiguity.  If unambiguous, call method
+		*   First, check for ambiguity.  If unambiguous, call the method
 		*   If ambiguous, see if the fallback role contains the method
 		*   If not, call the most recently declared method and throw a notice
 		*   If all else fails, MethodNotFoundException
+		*
+		* @param string $func The name of the role method to call
+		* @param string $args Any arguments to pass to the role method
+		* @return mixed 
 		*/
         function __call($func, $args) {
             if (isset($this->methods[$func]) && count($this->methods[$func]) > 1) {
@@ -101,7 +119,7 @@
 		    else if (isset($this->methods[$func]) && is_array($this->methods[$func]))
 		        return $this->call_explicit(end($this->methods[$func]), $func, $args);
 		    else 
-		        throw new MethodNotFoundException("::$func",array_keys($this->roles));
+		        throw new RoleMethodNotFoundException("???::$func",array_keys($this->roles));
         }
 		
 	}
