@@ -71,6 +71,10 @@
             }
             else if (is_string($arg))
                 return "'$arg'";
+            else if (is_null($arg))
+                return "NULL";
+            else if (empty($arg))
+                return "''";
             else return $arg;
 		}
 		
