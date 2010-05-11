@@ -163,7 +163,7 @@ It's possible that two roles will try to inject the same method, causing a probl
 
 = Summary =
 
-DCI provides a means to organize applications in a more flexible and maintainable way.  CoreDCI is an early implementation, but provides the basic libraries necessary to design an application using the DCI paradigm in PHP.  Currently, an MVC framework based on CoreDCI is being developed at http://code.google.com/p/waxphp .
+DCI provides a means to organize applications in a more flexible and maintainable way.  CoreDCI is an early implementation, but provides the basic libraries necessary to design an application using the DCI paradigm in PHP.  Currently, an application framework based on CoreDCI is being developed at http://code.google.com/p/waxphp .
 
 For the source code to all examples in this article, download the source code for CoreDCI and look in tests/account_example.php, which provides a full working example of CoreDCI.
 
