@@ -240,4 +240,5 @@
         @ob_end_flush();
         echo $exception->__toString();
     }
+    set_exception_handler("dci_exception_handler");
 ?>
